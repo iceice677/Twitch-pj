@@ -1,0 +1,88 @@
+/* stream */
+SELECT *
+FROM stream
+LIMIT 20;
+
+/* unique game */
+select distinct game
+from stream;
+/* unique channel */
+select distinct channel
+from stream;
+
+/* most popular games in Stream = 1 LOL 2 Dota 3 csgo */
+select game, count(*)
+from stream
+group by game
+order by 2 desc;
+
+/* Where are these LoL stream viewers located? */
+select country, count(*)
+from stream
+where game= 'League of Legends'
+group by country
+order by 2 desc;
+
+/* Create a list of players and their number of streamers.    
+-player: the source the user is using to view the stream*/
+select player, count(*)
+from stream
+group by player
+order by 2 desc;
+
+/* create a new column named genre for each of the games. 
+Group the games into their genres and count it
+1 MOBA
+2 FPS
+3 survival
+4 other*/
+select game,
+case
+  when game='League of Legends' then 'MOBA'
+  when game='Dota 2' then 'MOBA'
+  when game='Heroes of the Strom' then 'MOBA'
+  when game='Counter-Strike: Global Offensive' then 'FPS'
+  when game='DayZ' then 'Survival'
+  when game='Survival Evolved' then 'Survival'
+  else 'other'
+end as 'genre',
+count(*)
+from stream
+group by 1
+order by 3 desc;
+
+/* eg 2015-01-01 00:00:46 	46 */
+
+select time
+from stream
+limit 10;
+/* return a formatted data */
+select time,
+   strftime('%S', time)
+from stream
+group by 1
+limit 20;
+
+/* returns three columns
+    1The hours of the time column
+    2The view count for each hour
+    3filter the result with only the users in your country
+ */
+select strftime('%H', time),
+   count(*)
+from stream
+where country ='HK'
+group by 1;
+
+/* join two stream and chat table*/
+select *
+from stream
+join chat
+  on stream.device_id = chat.device_id;
+
+
+select stream.game,chat.game
+from stream
+join chat
+  on stream.device_id = chat.device_id
+group by stream.game, chat.game;
